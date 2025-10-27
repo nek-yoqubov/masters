@@ -127,8 +127,8 @@
             justify-content: center;
             align-items: center;
             animation: fadeIn 0.5s ease;
-            touch-action: manipulation;
-            overflow: hidden; /* Запрещаем скролл модального окна */
+            touch-action: none; /* Запрещаем все жесты браузера по умолчанию */
+            overflow: hidden;
         }
         .carousel-container {
             width: 100%;
@@ -137,30 +137,39 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            touch-action: none; /* Отключаем стандартные жесты браузера */
         }
         .carousel-track {
             display: flex;
-            transition: transform 0.5s ease-in-out; /* Плавный слайд */
+            transition: transform 0.5s ease-in-out;
             height: 100%;
+            touch-action: none; /* Отключаем стандартные жесты браузера */
         }
         .carousel-slide {
-            flex: 0 0 90%; /* 90% ширины, чтобы видно края соседних */
-            margin: 0 5%; /* Пробелы для показа соседних */
+            flex: 0 0 90%;
+            margin: 0 5%;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: auto; /* Разрешаем скролл внутри слайда для паннинга */
-            -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
-            scroll-snap-type: none;
-            touch-action: pan-x pan-y pinch-zoom; /* Уточняем touch-action для паннинга */
+            overflow: hidden; /* Убираем скроллбар */
+            touch-action: none; /* Отключаем стандартные жесты браузера */
+            position: relative;
         }
         .carousel-slide img {
-            max-width: none; /* Позволяем изображению быть больше контейнера для паннинга */
-            max-height: none;
+            max-width: 100%;
+            max-height: 100%;
             object-fit: contain;
             border-radius: 8px;
-            touch-action: pinch-zoom pan-x pan-y; /* Разрешаем зум и пан */
             transition: transform 0.3s ease;
+            cursor: grab;
+            touch-action: none; /* Полный контроль над касаниями */
+        }
+        .carousel-slide img:active {
+            cursor: grabbing;
+        }
+        .carousel-slide img.zoomed {
+            cursor: grab;
+            transform-origin: 0 0;
         }
         .close {
             position: absolute;
@@ -170,7 +179,7 @@
             font-size: 40px;
             cursor: pointer;
             transition: transform 0.3s ease;
-            z-index: 1001; /* Выше всех элементов */
+            z-index: 1001;
             user-select: none;
         }
         .close:hover {
@@ -185,7 +194,8 @@
             cursor: pointer;
             padding: 10px;
             transition: transform 0.3s ease;
-            z-index: 1001; /* Выше карусели */
+            z-index: 1001;
+            user-select: none;
         }
         .nav-arrow:hover {
             transform: translateY(-50%) scale(1.2);
@@ -207,13 +217,13 @@
             z-index: 1000;
         }
         .action-buttons .contact-btn {
-            gap: 10px; /* Стандартный отступ между кнопками */
+            gap: 10px;
         }
         .action-buttons .scroll-top {
-            gap: 20px; /* Двойной отступ перед звонком */
+            gap: 20px;
         }
         .action-btn {
-            background-color: #007bff; /* Цвет по умолчанию */
+            background-color: #007bff;
             color: #fff;
             width: 60px;
             height: 60px;
@@ -226,7 +236,7 @@
             opacity: 1;
         }
         .action-btn.scroll-top {
-            margin-bottom: 20px; /* Двойной отступ перед звонком */
+            margin-bottom: 20px;
         }
         .action-btn.whatsapp {
             background-color: #25D366;
@@ -304,7 +314,7 @@
                 height: 32px;
             }
             .action-btn.scroll-top {
-                margin-bottom: 15px; /* Меньший отступ для мобильных */
+                margin-bottom: 15px;
             }
             .theme-toggle {
                 width: 36px;
@@ -312,7 +322,7 @@
                 font-size: 18px;
             }
             .carousel-slide {
-                flex: 0 0 95%; /* Для мобильных меньше пробелов */
+                flex: 0 0 95%;
                 margin: 0 2.5%;
             }
         }
@@ -419,16 +429,16 @@
             images.forEach((img, index) => {
                 setTimeout(() => {
                     img.classList.add('loaded');
-                }, index * 100); // Задержка 100ms для каждого изображения
+                }, index * 100);
             });
         }
 
-        // Вызываем анимацию при загрузке страницы
         window.addEventListener('load', animateImages);
 
         // Модальное окно и навигация
         let currentImageIndex = 0;
         let isZoomed = false;
+        let currentTransform = { x: 0, y: 0, scale: 1 };
         const galleryImages = document.querySelectorAll('.gallery img');
         const modal = document.getElementById('modal');
         const carouselTrack = document.getElementById('carousel-track');
@@ -439,14 +449,15 @@
         let touchStartX = 0;
         let touchEndX = 0;
         let lastTap = 0;
+        let panStart = { x: 0, y: 0 };
+        let isPanning = false;
 
         galleryImages.forEach((img, index) => {
             img.addEventListener('click', () => {
                 currentImageIndex = index;
                 buildCarousel();
                 modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden'; // Запрещаем скролл фона
-                // Скрываем кнопки при открытии модального окна
+                document.body.style.overflow = 'hidden';
                 actionButtons.forEach(btn => btn.classList.add('hidden'));
                 themeToggle.classList.add('hidden');
             });
@@ -461,72 +472,106 @@
                 const img = document.createElement('img');
                 img.src = galleryImg.src;
                 img.alt = galleryImg.alt;
-                img.loading = 'eager';
                 slide.appendChild(img);
                 slides.push(slide);
 
                 // Обработка зума для ПК (двойной клик)
                 if (!isTouchDevice) {
                     img.addEventListener('dblclick', (e) => {
-                        isZoomed = !isZoomed;
-                        if (isZoomed) {
-                            const rect = img.getBoundingClientRect();
-                            const x = e.clientX - rect.left;
-                            const y = e.clientY - rect.top;
-                            img.style.transform = `scale(${zoomLevel})`;
-                            img.style.cursor = 'zoom-out';
-                            img.style.transformOrigin = `${(x / rect.width) * 100}% ${(y / rect.height) * 100}%`;
-                        } else {
-                            img.style.transform = 'scale(1)';
-                            img.style.cursor = 'zoom-in';
-                            img.style.transformOrigin = 'center';
+                        toggleZoom(img, e);
+                    });
+
+                    // Панорамирование для ПК
+                    let isDragging = false;
+                    let startX, startY, scrollLeft, scrollTop;
+
+                    img.addEventListener('mousedown', (e) => {
+                        if (img.classList.contains('zoomed')) {
+                            isDragging = true;
+                            img.style.cursor = 'grabbing';
+                            startX = e.pageX - img.offsetLeft;
+                            startY = e.pageY - img.offsetTop;
+                            scrollLeft = currentTransform.x;
+                            scrollTop = currentTransform.y;
+                            e.preventDefault();
                         }
                     });
 
-                    img.addEventListener('mousemove', (e) => {
-                        if (isZoomed) {
-                            const rect = img.getBoundingClientRect();
-                            const x = e.clientX - rect.left;
-                            const y = e.clientY - rect.top;
-                            img.style.transformOrigin = `${(x / rect.width) * 100}% ${(y / rect.height) * 100}%`;
+                    document.addEventListener('mousemove', (e) => {
+                        if (!isDragging) return;
+                        e.preventDefault();
+                        const x = e.pageX - img.offsetLeft;
+                        const y = e.pageY - img.offsetTop;
+                        const walkX = (x - startX) * 1.5;
+                        const walkY = (y - startY) * 1.5;
+                        
+                        currentTransform.x = scrollLeft - walkX;
+                        currentTransform.y = scrollTop - walkY;
+                        
+                        applyTransform(img);
+                    });
+
+                    document.addEventListener('mouseup', () => {
+                        isDragging = false;
+                        if (img.classList.contains('zoomed')) {
+                            img.style.cursor = 'grab';
                         }
                     });
                 }
 
-                // Обработка двойного касания для мобильных
+                // Обработка для мобильных устройств
                 if (isTouchDevice) {
                     img.addEventListener('touchstart', (e) => {
+                        // Двойное касание для зума
                         const now = new Date().getTime();
                         const timeSinceLastTap = now - lastTap;
                         lastTap = now;
 
                         if (timeSinceLastTap < 300 && timeSinceLastTap > 0) {
-                            // Двойное касание
-                            isZoomed = !isZoomed;
-                            if (isZoomed) {
-                                const rect = img.getBoundingClientRect();
-                                const touch = e.touches[0];
-                                const x = touch.clientX - rect.left;
-                                const y = touch.clientY - rect.top;
-                                img.style.transform = `scale(${zoomLevel})`;
-                                img.style.transformOrigin = `${(x / rect.width) * 100}% ${(y / rect.height) * 100}%`;
-                            } else {
-                                img.style.transform = 'scale(1)';
-                                img.style.transformOrigin = 'center';
-                            }
+                            toggleZoom(img, e.touches[0]);
+                            e.preventDefault();
+                            return;
+                        }
+
+                        // Начало панорамирования
+                        if (img.classList.contains('zoomed')) {
+                            isPanning = true;
+                            panStart.x = e.touches[0].clientX - currentTransform.x;
+                            panStart.y = e.touches[0].clientY - currentTransform.y;
                             e.preventDefault();
                         }
                     });
+
+                    img.addEventListener('touchmove', (e) => {
+                        if (isPanning && img.classList.contains('zoomed')) {
+                            const touch = e.touches[0];
+                            currentTransform.x = touch.clientX - panStart.x;
+                            currentTransform.y = touch.clientY - panStart.y;
+                            
+                            applyTransform(img);
+                            e.preventDefault();
+                        }
+                    });
+
+                    img.addEventListener('touchend', () => {
+                        isPanning = false;
+                    });
+
+                    // Запрещаем жесты браузера при зуме
+                    img.addEventListener('touchmove', (e) => {
+                        if (img.classList.contains('zoomed')) {
+                            e.preventDefault();
+                        }
+                    }, { passive: false });
                 }
             });
 
-            // Для бесконечного цикла: добавляем последнюю слайду в начало и первую в конец
+            // Для бесконечного цикла
             carouselTrack.appendChild(slides[slides.length - 1].cloneNode(true));
             slides.forEach(slide => carouselTrack.appendChild(slide));
             carouselTrack.appendChild(slides[0].cloneNode(true));
 
-            // Устанавливаем начальную позицию
-            currentImageIndex += 1; // Сдвиг из-за добавленной слайды в начало
+            currentImageIndex += 1;
             carouselTrack.style.transition = 'none';
             carouselTrack.style.transform = `translateX(-${currentImageIndex * 100}%)`;
             setTimeout(() => {
@@ -534,7 +579,53 @@
             }, 0);
         }
 
+        function toggleZoom(img, event) {
+            if (!isZoomed) {
+                // Входим в режим зума
+                isZoomed = true;
+                img.classList.add('zoomed');
+                
+                const rect = img.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+                
+                currentTransform.scale = zoomLevel;
+                currentTransform.x = -(x * (zoomLevel - 1));
+                currentTransform.y = -(y * (zoomLevel - 1));
+                
+                applyTransform(img);
+                img.style.cursor = 'grab';
+            } else {
+                // Выходим из режима зума
+                isZoomed = false;
+                img.classList.remove('zoomed');
+                
+                currentTransform = { x: 0, y: 0, scale: 1 };
+                applyTransform(img);
+                img.style.cursor = 'zoom-in';
+            }
+        }
+
+        function applyTransform(img) {
+            // Ограничиваем перемещение, чтобы не уходить за границы изображения
+            const maxX = (img.naturalWidth * currentTransform.scale - img.clientWidth) / 2;
+            const maxY = (img.naturalHeight * currentTransform.scale - img.clientHeight) / 2;
+            
+            if (Math.abs(currentTransform.x) > maxX) {
+                currentTransform.x = currentTransform.x > 0 ? maxX : -maxX;
+            }
+            if (Math.abs(currentTransform.y) > maxY) {
+                currentTransform.y = currentTransform.y > 0 ? maxY : -maxY;
+            }
+            
+            img.style.transform = `scale(${currentTransform.scale}) translate(${currentTransform.x}px, ${currentTransform.y}px)`;
+        }
+
         function changeImage(direction) {
+            // Сбрасываем зум при смене изображения
+            isZoomed = false;
+            currentTransform = { x: 0, y: 0, scale: 1 };
+            
             currentImageIndex += direction;
             carouselTrack.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
@@ -554,14 +645,22 @@
                         carouselTrack.style.transition = 'transform 0.5s ease-in-out';
                     }, 0);
                 }
+                
+                // Сбрасываем трансформацию для нового изображения
+                const currentImg = carouselTrack.querySelector('.carousel-slide:nth-child(' + (currentImageIndex + 1) + ') img');
+                if (currentImg) {
+                    currentImg.style.transform = 'scale(1)';
+                    currentImg.classList.remove('zoomed');
+                }
             }, {once: true});
         }
 
         function closeModal() {
             modal.style.display = 'none';
             isZoomed = false;
-            document.body.style.overflow = ''; // Восстанавливаем скролл фона
-            // Показываем кнопки при закрытии модального окна
+            currentTransform = { x: 0, y: 0, scale: 1 };
+            document.body.style.overflow = '';
+            
             if (window.scrollY > 300) {
                 actionButtons.forEach(btn => {
                     if (btn.classList.contains('scroll-top')) {
@@ -574,7 +673,6 @@
             updateActionButtonsVisibility();
         }
 
-        // Закрытие модального окна по клику вне изображения
         modal.addEventListener('click', (e) => {
             if (e.target === modal || e.target.classList.contains('close')) {
                 closeModal();
@@ -594,25 +692,27 @@
             }
         });
 
-        // Swipe для мобильных устройств
+        // Swipe для мобильных устройств (только когда не в режиме зума)
         modal.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
+            if (!isZoomed) {
+                touchStartX = e.changedTouches[0].screenX;
+            }
         });
 
         modal.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            if (window.visualViewport.scale <= 1) { // Свайп только при зуме 100%
+            if (!isZoomed) {
+                touchEndX = e.changedTouches[0].screenX;
                 if (touchStartX - touchEndX > 50) {
-                    changeImage(1); // Swipe влево -> следующее
+                    changeImage(1);
                 } else if (touchEndX - touchStartX > 50) {
-                    changeImage(-1); // Swipe вправо -> предыдущее
+                    changeImage(-1);
                 }
             }
         });
 
-        // Более плавная и быстрая прокрутка наверх
+        // Остальной код без изменений
         function scrollToTop() {
-            const scrollStep = -window.scrollY / (500 / 15); // Длительность ~0.5s
+            const scrollStep = -window.scrollY / (500 / 15);
             const scrollInterval = setInterval(() => {
                 if (window.scrollY !== 0) {
                     window.scrollBy(0, scrollStep);
@@ -622,7 +722,6 @@
             }, 15);
         }
 
-        // Управление видимостью кнопок
         function updateActionButtonsVisibility() {
             const contactsSection = document.getElementById('contacts');
             const rect = contactsSection.getBoundingClientRect();
@@ -658,7 +757,6 @@
             }
         });
 
-        // Переключатель темы
         function toggleTheme() {
             document.body.classList.toggle('dark-theme');
             const themeToggle = document.querySelector('.theme-toggle');
