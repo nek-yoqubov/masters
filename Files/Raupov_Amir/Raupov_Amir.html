@@ -172,8 +172,8 @@
         .next {
             right: 20px;
         }
-        /* Кнопки контактов в правом углу */
-        .contact-buttons {
+        /* Кнопки в правом углу */
+        .action-buttons {
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -182,7 +182,13 @@
             gap: 10px;
             z-index: 1000;
         }
-        .contact-btn {
+        .action-buttons .contact-btn {
+            gap: 10px; /* Стандартный отступ между кнопками */
+        }
+        .action-buttons .scroll-top {
+            gap: 20px; /* Двойной отступ перед звонком */
+        }
+        .action-btn {
             background-color: #007bff; /* Цвет по умолчанию */
             color: #fff;
             width: 60px;
@@ -194,54 +200,30 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             transition: opacity 0.3s ease, transform 0.3s ease;
             opacity: 1;
+            font-size: 24px; /* Для иконки "Наверх" */
         }
-        .contact-btn.whatsapp {
+        .action-btn.scroll-top {
+            margin-bottom: 20px; /* Двойной отступ перед звонком */
+        }
+        .action-btn.whatsapp {
             background-color: #25D366;
         }
-        .contact-btn.phone {
+        .action-btn.phone {
             background-color: #34C759;
         }
-        .contact-btn.instagram {
+        .action-btn.instagram {
             background-color: #E4405F;
         }
-        .contact-btn.hidden {
+        .action-btn.hidden {
             opacity: 0;
             pointer-events: none;
         }
-        .contact-btn:hover {
+        .action-btn:hover {
             transform: scale(1.1);
         }
-        .contact-btn img {
+        .action-btn img {
             width: 40px;
             height: 40px;
-        }
-        /* Кнопка "Наверх" */
-        .scroll-top {
-            position: fixed;
-            bottom: 250px; /* Размещаем выше кнопок контактов */
-            right: 20px;
-            background-color: #007bff;
-            color: #fff;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            z-index: 1000;
-            cursor: pointer;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        .scroll-top.show {
-            display: flex;
-        }
-        .scroll-top.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .scroll-top:hover {
-            transform: scale(1.1);
         }
         /* Переключатель темы */
         .theme-toggle {
@@ -251,11 +233,16 @@
             background-color: #007bff;
             color: #fff;
             border: none;
-            padding: 10px;
-            border-radius: 5px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             z-index: 1000;
             transition: background-color 0.3s ease, opacity 0.3s ease;
+            font-size: 20px;
         }
         .theme-toggle.hidden {
             opacity: 0;
@@ -281,12 +268,25 @@
                 font-size: 30px;
                 padding: 5px;
             }
-            .contact-buttons {
+            .action-buttons {
                 bottom: 10px;
                 right: 10px;
             }
-            .scroll-top {
-                bottom: 240px; /* Скорректировано для мобильных */
+            .action-btn {
+                width: 50px;
+                height: 50px;
+            }
+            .action-btn img {
+                width: 32px;
+                height: 32px;
+            }
+            .action-btn.scroll-top {
+                margin-bottom: 15px; /* Меньший отступ для мобильных */
+            }
+            .theme-toggle {
+                width: 36px;
+                height: 36px;
+                font-size: 18px;
             }
         }
     </style>
@@ -364,26 +364,24 @@
         <span class="nav-arrow next" onclick="changeImage(1)">&#10095;</span>
     </div>
 
-    <!-- Кнопки контактов -->
-    <div class="contact-buttons">
-        <a href="https://wa.me/+992928570005" target="_blank" class="contact-btn whatsapp" title="Связаться в WhatsApp">
-            <img src="https://cdn-icons-png.flaticon.com/24/733/733585.png" alt="WhatsApp">
-        </a>
-        <a href="tel:+992928570005" class="contact-btn phone" title="Позвонить">
+    <!-- Кнопки в правом углу -->
+    <div class="action-buttons">
+        <div class="action-btn scroll-top" onclick="scrollToTop()" title="Наверх">
+            ↑
+        </div>
+        <a href="tel:+992928570005" class="action-btn phone" title="Позвонить">
             <img src="https://cdn-icons-png.flaticon.com/24/3616/3616215.png" alt="Телефон">
         </a>
-        <a href="https://instagram.com/master_username" target="_blank" class="contact-btn instagram" title="Instagram">
+        <a href="https://wa.me/+992928570005" target="_blank" class="action-btn whatsapp" title="Связаться в WhatsApp">
+            <img src="https://cdn-icons-png.flaticon.com/24/733/733585.png" alt="WhatsApp">
+        </a>
+        <a href="https://instagram.com/master_username" target="_blank" class="action-btn instagram" title="Instagram">
             <img src="https://cdn-icons-png.flaticon.com/24/2111/2111463.png" alt="Instagram">
         </a>
     </div>
 
-    <!-- Кнопка "Наверх" -->
-    <div class="scroll-top" onclick="scrollToTop()">
-        ↑
-    </div>
-
     <!-- Переключатель темы -->
-    <button class="theme-toggle" onclick="toggleTheme()">Тёмная тема</button>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Переключить тему">☀</button>
 
     <script>
         // Последовательное появление изображений
@@ -407,8 +405,7 @@
         const modalImg = document.getElementById('modal-img');
         const zoomLevel = 2;
         const isTouchDevice = 'ontouchstart' in window;
-        const contactButtons = document.querySelectorAll('.contact-btn');
-        const scrollTopBtn = document.querySelector('.scroll-top');
+        const actionButtons = document.querySelectorAll('.action-btn');
         const themeToggle = document.querySelector('.theme-toggle');
 
         images.forEach((img, index) => {
@@ -422,9 +419,8 @@
                 modalImg.style.cursor = 'zoom-in';
                 modalImg.style.transformOrigin = 'center';
                 // Скрываем кнопки при открытии модального окна
-                scrollTopBtn.classList.add('hidden');
+                actionButtons.forEach(btn => btn.classList.add('hidden'));
                 themeToggle.classList.add('hidden');
-                contactButtons.forEach(btn => btn.classList.add('hidden'));
             });
         });
 
@@ -437,11 +433,15 @@
             modalImg.style.transformOrigin = 'center';
             // Показываем кнопки при закрытии модального окна
             if (window.scrollY > 300) {
-                scrollTopBtn.classList.add('show');
-                scrollTopBtn.classList.remove('hidden');
+                actionButtons.forEach(btn => {
+                    if (btn.classList.contains('scroll-top')) {
+                        btn.classList.add('show');
+                        btn.classList.remove('hidden');
+                    }
+                });
             }
             themeToggle.classList.remove('hidden');
-            updateContactButtonsVisibility();
+            updateActionButtonsVisibility();
         }
 
         function changeImage(direction) {
@@ -539,16 +539,16 @@
             }, 15);
         }
 
-        // Управление видимостью кнопок контактов
-        function updateContactButtonsVisibility() {
+        // Управление видимостью кнопок
+        function updateActionButtonsVisibility() {
             const contactsSection = document.getElementById('contacts');
             const rect = contactsSection.getBoundingClientRect();
             const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
 
-            contactButtons.forEach(btn => {
-                if (isVisible) {
+            actionButtons.forEach(btn => {
+                if (isVisible && !btn.classList.contains('scroll-top')) {
                     btn.classList.add('hidden');
-                } else {
+                } else if (!isVisible && !btn.classList.contains('scroll-top')) {
                     btn.classList.remove('hidden');
                 }
             });
@@ -557,13 +557,21 @@
         window.addEventListener('scroll', () => {
             if (modal.style.display !== 'flex') {
                 if (window.scrollY > 300) {
-                    scrollTopBtn.classList.add('show');
-                    scrollTopBtn.classList.remove('hidden');
+                    actionButtons.forEach(btn => {
+                        if (btn.classList.contains('scroll-top')) {
+                            btn.classList.add('show');
+                            btn.classList.remove('hidden');
+                        }
+                    });
                 } else {
-                    scrollTopBtn.classList.remove('show');
-                    scrollTopBtn.classList.add('hidden');
+                    actionButtons.forEach(btn => {
+                        if (btn.classList.contains('scroll-top')) {
+                            btn.classList.remove('show');
+                            btn.classList.add('hidden');
+                        }
+                    });
                 }
-                updateContactButtonsVisibility();
+                updateActionButtonsVisibility();
             }
         });
 
@@ -571,7 +579,7 @@
         function toggleTheme() {
             document.body.classList.toggle('dark-theme');
             const themeToggle = document.querySelector('.theme-toggle');
-            themeToggle.textContent = document.body.classList.contains('dark-theme') ? 'Светлая тема' : 'Тёмная тема';
+            themeToggle.innerHTML = document.body.classList.contains('dark-theme') ? '☀' : '🌙';
         }
     </script>
 </body>
