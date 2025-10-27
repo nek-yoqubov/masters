@@ -165,6 +165,8 @@
             font-size: 40px;
             cursor: pointer;
             transition: transform 0.3s ease;
+            z-index: 1001; /* Выше всех элементов */
+            user-select: none;
         }
         .close:hover {
             transform: scale(1.2);
@@ -178,6 +180,7 @@
             cursor: pointer;
             padding: 10px;
             transition: transform 0.3s ease;
+            z-index: 1001; /* Выше карусели */
         }
         .nav-arrow:hover {
             transform: translateY(-50%) scale(1.2);
@@ -430,6 +433,7 @@
         const themeToggle = document.querySelector('.theme-toggle');
         let touchStartX = 0;
         let touchEndX = 0;
+        let lastTap = 0;
 
         galleryImages.forEach((img, index) => {
             img.addEventListener('click', () => {
@@ -453,15 +457,15 @@
                 img.alt = galleryImg.alt;
                 slide.appendChild(img);
                 slides.push(slide);
-                // Добавляем обработчики зума для ПК
-                if (!isTouchDevice) {
-                    img.addEventListener('click', (e) => {
-                        const rect = img.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
-                        const y = e.clientY - rect.top;
 
+                // Обработка зума для ПК (двойной клик)
+                if (!isTouchDevice) {
+                    img.addEventListener('dblclick', (e) => {
                         isZoomed = !isZoomed;
                         if (isZoomed) {
+                            const rect = img.getBoundingClientRect();
+                            const x = e.clientX - rect.left;
+                            const y = e.clientY - rect.top;
                             img.style.transform = `scale(${zoomLevel})`;
                             img.style.cursor = 'zoom-out';
                             img.style.transformOrigin = `${(x / rect.width) * 100}% ${(y / rect.height) * 100}%`;
@@ -480,13 +484,30 @@
                             img.style.transformOrigin = `${(x / rect.width) * 100}% ${(y / rect.height) * 100}%`;
                         }
                     });
+                }
 
-                    img.addEventListener('dblclick', () => {
-                        if (isZoomed) {
-                            isZoomed = false;
-                            img.style.transform = 'scale(1)';
-                            img.style.cursor = 'zoom-in';
-                            img.style.transformOrigin = 'center';
+                // Обработка двойного касания для мобильных
+                if (isTouchDevice) {
+                    img.addEventListener('touchstart', (e) => {
+                        const now = new Date().getTime();
+                        const timeSinceLastTap = now - lastTap;
+                        lastTap = now;
+
+                        if (timeSinceLastTap < 300 && timeSinceLastTap > 0) {
+                            // Двойное касание
+                            isZoomed = !isZoomed;
+                            if (isZoomed) {
+                                const rect = img.getBoundingClientRect();
+                                const touch = e.touches[0];
+                                const x = touch.clientX - rect.left;
+                                const y = touch.clientY - rect.top;
+                                img.style.transform = `scale(${zoomLevel})`;
+                                img.style.transformOrigin = `${(x / rect.width) * 100}% ${(y / rect.height) * 100}%`;
+                            } else {
+                                img.style.transform = 'scale(1)';
+                                img.style.transformOrigin = 'center';
+                            }
+                            e.preventDefault();
                         }
                     });
                 }
@@ -529,13 +550,6 @@
             }, {once: true});
         }
 
-        // Закрытие модального окна по клику вне изображения
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closeModal();
-            }
-        });
-
         function closeModal() {
             modal.style.display = 'none';
             isZoomed = false;
@@ -551,6 +565,13 @@
             themeToggle.classList.remove('hidden');
             updateActionButtonsVisibility();
         }
+
+        // Закрытие модального окна по клику вне изображения
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal || e.target.classList.contains('close')) {
+                closeModal();
+            }
+        });
 
         // Поддержка стрелок клавиатуры
         document.addEventListener('keydown', (e) => {
