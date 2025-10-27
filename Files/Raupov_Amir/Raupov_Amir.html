@@ -421,7 +421,7 @@
         // Модальное окно и навигация
         let currentImageIndex = 0;
         let isZoomed = false;
-        const images = document.querySelectorAll('.gallery img');
+        const galleryImages = document.querySelectorAll('.gallery img');
         const modal = document.getElementById('modal');
         const carouselTrack = document.getElementById('carousel-track');
         const zoomLevel = 2;
@@ -431,11 +431,10 @@
         let touchStartX = 0;
         let touchEndX = 0;
 
-        images.forEach((img, index) => {
+        galleryImages.forEach((img, index) => {
             img.addEventListener('click', () => {
                 currentImageIndex = index;
                 buildCarousel();
-                updateCarousel();
                 modal.style.display = 'flex';
                 // Скрываем кнопки при открытии модального окна
                 actionButtons.forEach(btn => btn.classList.add('hidden'));
@@ -445,31 +444,97 @@
 
         function buildCarousel() {
             carouselTrack.innerHTML = '';
-            images.forEach((galleryImg, index) => {
+            const slides = [];
+            galleryImages.forEach((galleryImg, index) => {
                 const slide = document.createElement('div');
                 slide.classList.add('carousel-slide');
                 const img = document.createElement('img');
                 img.src = galleryImg.src;
                 img.alt = galleryImg.alt;
-                img.id = 'modal-img-' + index;
                 slide.appendChild(img);
-                carouselTrack.appendChild(slide);
-            });
-        }
+                slides.push(slide);
+                // Добавляем обработчики зума для ПК
+                if (!isTouchDevice) {
+                    img.addEventListener('click', (e) => {
+                        const rect = img.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
 
-        function updateCarousel() {
+                        isZoomed = !isZoomed;
+                        if (isZoomed) {
+                            img.style.transform = `scale(${zoomLevel})`;
+                            img.style.cursor = 'zoom-out';
+                            img.style.transformOrigin = `${(x / rect.width) * 100}% ${(y / rect.height) * 100}%`;
+                        } else {
+                            img.style.transform = 'scale(1)';
+                            img.style.cursor = 'zoom-in';
+                            img.style.transformOrigin = 'center';
+                        }
+                    });
+
+                    img.addEventListener('mousemove', (e) => {
+                        if (isZoomed) {
+                            const rect = img.getBoundingClientRect();
+                            const x = e.clientX - rect.left;
+                            const y = e.clientY - rect.top;
+                            img.style.transformOrigin = `${(x / rect.width) * 100}% ${(y / rect.height) * 100}%`;
+                        }
+                    });
+
+                    img.addEventListener('dblclick', () => {
+                        if (isZoomed) {
+                            isZoomed = false;
+                            img.style.transform = 'scale(1)';
+                            img.style.cursor = 'zoom-in';
+                            img.style.transformOrigin = 'center';
+                        }
+                    });
+                }
+            });
+
+            // Для бесконечного цикла: добавляем последнюю слайду в начало и первую в конец
+            carouselTrack.appendChild(slides[slides.length - 1].cloneNode(true));
+            slides.forEach(slide => carouselTrack.appendChild(slide));
+            carouselTrack.appendChild(slides[0].cloneNode(true));
+
+            // Устанавливаем начальную позицию
+            currentImageIndex += 1; // Сдвиг из-за добавленной слайды в начало
+            carouselTrack.style.transition = 'none';
             carouselTrack.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+            setTimeout(() => {
+                carouselTrack.style.transition = 'transform 0.5s ease-in-out';
+            }, 0);
         }
 
         function changeImage(direction) {
             currentImageIndex += direction;
-            if (currentImageIndex < 0) {
-                currentImageIndex = images.length - 1;
-            } else if (currentImageIndex >= images.length) {
-                currentImageIndex = 0;
-            }
-            updateCarousel();
+            carouselTrack.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+
+            carouselTrack.addEventListener('transitionend', () => {
+                if (currentImageIndex === 0) {
+                    carouselTrack.style.transition = 'none';
+                    currentImageIndex = galleryImages.length;
+                    carouselTrack.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+                    setTimeout(() => {
+                        carouselTrack.style.transition = 'transform 0.5s ease-in-out';
+                    }, 0);
+                } else if (currentImageIndex === galleryImages.length + 1) {
+                    carouselTrack.style.transition = 'none';
+                    currentImageIndex = 1;
+                    carouselTrack.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+                    setTimeout(() => {
+                        carouselTrack.style.transition = 'transform 0.5s ease-in-out';
+                    }, 0);
+                }
+            }, {once: true});
         }
+
+        // Закрытие модального окна по клику вне изображения
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
 
         function closeModal() {
             modal.style.display = 'none';
@@ -486,13 +551,6 @@
             themeToggle.classList.remove('hidden');
             updateActionButtonsVisibility();
         }
-
-        // Закрытие модального окна по клику вне изображения
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closeModal();
-            }
-        });
 
         // Поддержка стрелок клавиатуры
         document.addEventListener('keydown', (e) => {
@@ -522,39 +580,6 @@
                 }
             }
         });
-
-        // Обработка зума для ПК
-        if (!isTouchDevice) {
-            modal.addEventListener('click', (e) => {
-                const img = document.getElementById('modal-img-' + currentImageIndex);
-                if (img && e.target === img) {
-                    const rect = img.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-
-                    isZoomed = !isZoomed;
-                    if (isZoomed) {
-                        img.style.transform = `scale(${zoomLevel})`;
-                        img.style.cursor = 'zoom-out';
-                        img.style.transformOrigin = `${(x / rect.width) * 100}% ${(y / rect.height) * 100}%`;
-                    } else {
-                        img.style.transform = 'scale(1)';
-                        img.style.cursor = 'zoom-in';
-                        img.style.transformOrigin = 'center';
-                    }
-                }
-            });
-
-            modal.addEventListener('mousemove', (e) => {
-                const img = document.getElementById('modal-img-' + currentImageIndex);
-                if (isZoomed && img) {
-                    const rect = img.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    img.style.transformOrigin = `${(x / rect.width) * 100}% ${(y / rect.height) * 100}%`;
-                }
-            });
-        }
 
         // Более плавная и быстрая прокрутка наверх
         function scrollToTop() {
