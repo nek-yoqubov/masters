@@ -149,25 +149,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden; /* Убираем скроллбар */
-            touch-action: none; /* Отключаем стандартные жесты браузера */
-            position: relative;
+            overflow: auto; /* Разрешаем скролл внутри слайда для паннинга */
+            -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
         }
         .carousel-slide img {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
             border-radius: 8px;
+            touch-action: pinch-zoom pan-x pan-y; /* Разрешаем зум и пан */
             transition: transform 0.3s ease;
-            cursor: grab;
-            touch-action: none; /* Отключаем стандартные жесты браузера */
-        }
-        .carousel-slide img:active {
-            cursor: grabbing;
-        }
-        .carousel-slide img.zoomed {
-            cursor: grab;
-            transform-origin: 0 0;
         }
         .close {
             position: absolute;
@@ -417,7 +408,7 @@
     </div>
 
     <!-- Переключатель темы -->
-    <button class="theme-toggle" onclick="toggleTheme()" title="Переключить тему">☀</button>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Переключить тему">🌙</button>
 
     <script>
         // Последовательное появление изображений
@@ -446,8 +437,6 @@
         let touchStartX = 0;
         let touchEndX = 0;
         let lastTap = 0;
-        let panStart = { x: 0, y: 0 };
-        let isPanning = false;
 
         galleryImages.forEach((img, index) => {
             img.addEventListener('click', () => {
@@ -470,6 +459,7 @@
                 const img = document.createElement('img');
                 img.src = galleryImg.src;
                 img.alt = galleryImg.alt;
+                img.loading = 'eager';
                 slide.appendChild(img);
                 slides.push(slide);
 
@@ -523,44 +513,7 @@
                                 img.style.transformOrigin = 'center';
                             }
                             e.preventDefault();
-                        } else if (isZoomed && e.touches.length === 1) {
-                            // Начало панорамирования
-                            isPanning = true;
-                            panStart.x = e.touches[0].clientX - panStart.x;
-                            panStart.y = e.touches[0].clientY - panStart.y;
-                            e.preventDefault();
                         }
-                    });
-
-                    img.addEventListener('touchmove', (e) => {
-                        if (isPanning && isZoomed && e.touches.length === 1) {
-                            const touch = e.touches[0];
-                            panStart.x = touch.clientX - panStart.x;
-                            panStart.y = touch.clientY - panStart.y;
-                            img.style.transform = `scale(${zoomLevel}) translate(${panStart.x}px, ${panStart.y}px)`;
-                            e.preventDefault();
-                        } else if (e.touches.length === 2) {
-                            // Pinch-zoom, но ограничиваем максимум 2x
-                            e.preventDefault();
-                            const touch1 = e.touches[0];
-                            const touch2 = e.touches[1];
-                            const dx = touch1.clientX - touch2.clientX;
-                            const dy = touch1.clientY - touch2.clientY;
-                            const dist = Math.sqrt(dx * dx + dy * dy);
-                            if (img.lastDist) {
-                                const scaleChange = dist / img.lastDist;
-                                let newScale = currentTransform.scale * scaleChange;
-                                newScale = Math.min(newScale, zoomLevel); // Ограничение зума 2x
-                                img.style.transform = `scale(${newScale})`;
-                                currentTransform.scale = newScale;
-                            }
-                            img.lastDist = dist;
-                        }
-                    });
-
-                    img.addEventListener('touchend', (e) => {
-                        isPanning = false;
-                        img.lastDist = 0;
                     });
                 }
             });
@@ -647,9 +600,9 @@
         modal.addEventListener('touchend', (e) => {
             touchEndX = e.changedTouches[0].screenX;
             if (window.visualViewport.scale <= 1) { // Свайп только при зуме 100%
-                if (touchStartX - touchEndX > 150) { // Увеличен порог для свайпа
+                if (touchStartX - touchEndX > 50) {
                     changeImage(1); // Swipe влево -> следующее
-                } else if (touchEndX - touchStartX > 150) {
+                } else if (touchEndX - touchStartX > 50) {
                     changeImage(-1); // Swipe вправо -> предыдущее
                 }
             }
@@ -707,7 +660,7 @@
         function toggleTheme() {
             document.body.classList.toggle('dark-theme');
             const themeToggle = document.querySelector('.theme-toggle');
-            themeToggle.innerHTML = document.body.classList.contains('dark-theme') ? '☀' : '🌙';
+            themeToggle.innerHTML = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
         }
     </script>
 </body>
