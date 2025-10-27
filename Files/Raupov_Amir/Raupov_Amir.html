@@ -151,10 +151,12 @@
             justify-content: center;
             overflow: auto; /* Разрешаем скролл внутри слайда для паннинга */
             -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
+            scroll-snap-type: none;
+            touch-action: pan-x pan-y pinch-zoom; /* Уточняем touch-action для паннинга */
         }
         .carousel-slide img {
-            max-width: 100%;
-            max-height: 100%;
+            max-width: none; /* Позволяем изображению быть больше контейнера для паннинга */
+            max-height: none;
             object-fit: contain;
             border-radius: 8px;
             touch-action: pinch-zoom pan-x pan-y; /* Разрешаем зум и пан */
