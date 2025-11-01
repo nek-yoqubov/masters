@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Юсупов Олимчон Эркинчонович  — мастер по изготовлению эксклюзивной мебели на заказ. Минимализм, loft, 15 лет опыта.">
+    <meta name="keywords" content="мебель на заказ, Юсупов Олимчон Эркинчонович , минимализм, loft, деревянная мебель, Таджикистан">
+    <meta name="author" content="PROMEBEL">
+    <title>Мастер: Юсупов Олимчон Эркинчонович </title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css.css">
+</head>
+<body>
+    <header>
+        
+         <img src="logo.jpg" alt="Логотип компании" class="logo" height="100%" width="100%">
+       <font size="+3"><h2 >CONTRAST MEBEL</h2></font>
+    </header>
+    <div class="container">
+        <div class="bio-section">
+            <h1>Юсупов Олимчон Эркинчонович </h1>
+            <p class="experience">Опыт: 8 лет в мебельной сфере</p>
+            <p>
+           <b>Мастер мебели, основатель «Контраст Мебель»</b>
+<br>
+Специализируется на изготовлении всех видов мебели: корпусной, мягкой, крашеной, под индивидуальный дизайн и размеры помещения.
+
+В работе использует качественные материалы EGGER, что обеспечивает долговечность, точность стыков и современный внешний вид изделий.
+
+Основное направление — мебель под заказ, полностью соответствующая пожеланиям клиента:<b> от идеи и проектирования до установки.</b> 
+            </p>
+        </div>
+        <div class="gallery" id="gallery">
+            <img src="1.jpg" alt="Работа 1" loading="lazy">
+            <img src="2.jpg" alt="Работа 2" loading="lazy">
+            <img src="3.jpg" alt="Работа 3" loading="lazy">
+            <img src="4.jpg" alt="Работа 5" loading="lazy">
+            <img src="6.jpg" alt="Работа 6" loading="lazy">
+            <img src="7.jpg" alt="Работа 7" loading="lazy">
+            <img src="8.jpg" alt="Работа 8" loading="lazy">
+            <img src="9.jpg" alt="Работа 9" loading="lazy">
+            <img src="10.jpg" alt="Работа 10" loading="lazy">
+            <img src="11.jpg" alt="Работа 11" loading="lazy">
+            <img src="12.jpg" alt="Работа 12" loading="lazy">
+            <img src="13.jpg" alt="Работа 13" loading="lazy">
+            <img src="15.jpg" alt="Работа 14" loading="lazy">
+            <img src="14.jpg" alt="Работа 15" loading="lazy">
+            <img src="16.jpg" alt="Работа 16" loading="lazy">
+            <img src="17.jpg" alt="Работа 17" loading="lazy">
+            <img src="18.jpg" alt="Работа 18" loading="lazy">
+            <img src="19.jpg" alt="Работа 19" loading="lazy">
+            <img src="20.jpg" alt="Работа 20" loading="lazy">
+            <img src="21.jpg" alt="Работа 20" loading="lazy">
+            <img src="22.jpg" alt="Работа 20" loading="lazy">
+            <img src="23.jpg" alt="Работа 20" loading="lazy">
+            <div class="gallery-item" data-src="в1.mp4">
+    <video class="gallery-video" preload="metadata" muted>
+        <source src="в1.mp4" type="video/mp4">
+    </video>
+    <div class="play-icon"></div>
+</div>
+<div class="gallery-item" data-src="в2.mp4">
+    <video class="gallery-video" preload="metadata" muted>
+        <source src="в2.mp4" type="video/mp4">
+    </video>
+    <div class="play-icon"></div>
+</div>
+
+            <!--div class="gallery-item" data-src="в3.mp4">
+                <video class="gallery-video" preload="metadata" muted>
+                    <source src="в3.mp4" type="video/mp4">
+                </video>
+                <div class="play-icon"></div>
+            </div>
+            <div class="gallery-item" data-src="в4.mp4">
+                <video class="gallery-video" preload="metadata" muted>
+                    <source src="в4.mp4" type="video/mp4">
+                </video>
+                <div class="play-icon"></div>
+            </div-->
+        </div>
+        <div class="contacts" id="contacts">
+            <h2>Контакты</h2>
+            <p>
+                <a href="tel:+992928008877">
+                    +992 (92) 800-88-77
+                    <img src="https://cdn-icons-png.flaticon.com/24/3616/3616215.png" alt="Телефон">
+                </a>
+            </p>
+            <p>
+                <a href="https://wa.me/+992928008877" target="_blank">
+                    WhatsApp
+                    <img src="https://cdn-icons-png.flaticon.com/24/733/733585.png" alt="WhatsApp">
+                </a>
+            </p>
+            <p>
+                <a href="https://instagram.com/contrast_meb" target="_blank">
+                    @contrast_meb
+                    <img src="https://cdn-icons-png.flaticon.com/24/2111/2111463.png" alt="Instagram">
+                </a>
+            </p>
+        </div>
+    </div>
+    <footer>
+       
+    </footer>
+    <!-- Модальное окно -->
+    <div id="modal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div class="carousel-container">
+            <div id="carousel-track" class="carousel-track"></div>
+        </div>
+        <span class="nav-arrow prev" onclick="changeImage(-1)">&#10094;</span>
+        <span class="nav-arrow next" onclick="changeImage(1)">&#10095;</span>
+    </div>
+    <!-- Кнопки в правом углу -->
+    <div class="action-buttons">
+        <div class="action-btn scroll-top" onclick="scrollToTop()" title="Наверх">
+            ↑
+        </div>
+        <a href="tel:+992928008877" class="action-btn phone" title="Позвонить">
+            <img src="https://cdn-icons-png.flaticon.com/24/3616/3616215.png" alt="Телефон">
+        </a>
+        <a href="https://wa.me/+992928008877" target="_blank" class="action-btn whatsapp" title="Связаться в WhatsApp">
+            <img src="https://cdn-icons-png.flaticon.com/24/733/733585.png" alt="WhatsApp">
+        </a>
+        <a href="https://instagram.com/contrast_meb" target="_blank" class="action-btn instagram" title="Instagram">
+            <img src="https://cdn-icons-png.flaticon.com/24/2111/2111463.png" alt="Instagram">
+        </a>
+    </div>
+    <!-- Переключатель темы -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="Переключить тему">🌙</button>
+    <script src="js.js"></script>
+</body>
+</html>
