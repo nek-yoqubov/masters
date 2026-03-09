@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Каримов Иномчон — мастер по изготовлению эксклюзивной мебели на заказ. Минимализм, loft, 14 лет опыта.">
+    <meta name="keywords" content="мебель на заказ, Каримов Иномчон , минимализм, loft, деревянная мебель, Таджикистан">
+    <meta name="author" content="PROMEBEL">
+    <title>Мастер: Каримов Иномчон </title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css.css">
+</head>
+<body>
+    <header>
+        
+    </header>
+    <div class="container">
+        <div class="bio-section">
+            <h1>Каримов Иномчон </h1>
+            <p class="experience">Опыт: 14 лет в мебельной сфере</p>
+            <p>
+
+Мастер по изготовлению мебели и интерьерных решений под заказ.
+Выполняет проекты для квартир, домов и коммерческих помещений: кухни, шкафы-купе, гардеробные, мебель для ванных комнат, мягкие кровати и декоративные панели.
+
+Работает в современном стиле, уделяя внимание деталям, качеству материалов и аккуратности исполнения.
+Каждый проект проходит полный цикл — от идеи и проектирования до изготовления и профессиональной установки.</b> 
+            </p>
+        </div>
+        <div class="gallery" id="gallery">
+            <img src="1.jpeg" alt="Работа 1" loading="lazy">
+            <img src="2.jpeg" alt="Работа 2" loading="lazy">
+            <img src="3.jpeg" alt="Работа 3" loading="lazy">
+            <img src="4.jpeg" alt="Работа 4" loading="lazy">
+            <img src="5.jpeg" alt="Работа 5" loading="lazy">
+            <img src="6.jpeg" alt="Работа 6" loading="lazy">
+            <img src="7.jpeg" alt="Работа 7" loading="lazy">
+            <img src="8.jpeg" alt="Работа 8" loading="lazy">
+            <img src="9.jpeg" alt="Работа 9" loading="lazy">
+            <img src="10.jpeg" alt="Работа 10" loading="lazy">
+            <img src="11.jpeg" alt="Работа 11" loading="lazy">
+            <img src="12.jpeg" alt="Работа 12" loading="lazy">
+            <img src="13.jpeg" alt="Работа 13" loading="lazy">
+            <img src="15.jpeg" alt="Работа 14" loading="lazy">
+            <img src="14.jpeg" alt="Работа 15" loading="lazy">
+            <img src="16.jpeg" alt="Работа 16" loading="lazy">
+            <img src="17.jpeg" alt="Работа 17" loading="lazy">
+            
+            <div class="gallery-item" data-src="в1.mp4">
+    <video class="gallery-video" preload="metadata" muted>
+        <source src="в1.mp4" type="video/mp4">
+    </video>
+    <div class="play-icon"></div>
+</div>
+<div class="gallery-item" data-src="в2.mp4">
+    <video class="gallery-video" preload="metadata" muted>
+        <source src="в2.mp4" type="video/mp4">
+    </video>
+    <div class="play-icon"></div>
+</div>
+
+            <div class="gallery-item" data-src="в3.mp4">
+                <video class="gallery-video" preload="metadata" muted>
+                    <source src="в3.mp4" type="video/mp4">
+                </video>
+                <div class="play-icon"></div>
+            </div>
+            <div class="gallery-item" data-src="в4.mp4">
+                <video class="gallery-video" preload="metadata" muted>
+                    <source src="в4.mp4" type="video/mp4">
+                </video>
+                <div class="play-icon"></div>
+            </div>
+        </div>
+        <div class="contacts" id="contacts">
+            <h2>Контакты</h2>
+            <p>
+                <a href="tel:+992927857009">
+                    +992 (92) 785-70-09
+                    <img src="https://cdn-icons-png.flaticon.com/24/3616/3616215.png" alt="Телефон">
+                </a>
+            </p>
+            <p>
+                <a href="https://wa.me/+992927857009" target="_blank">
+                    WhatsApp
+                    <img src="https://cdn-icons-png.flaticon.com/24/733/733585.png" alt="WhatsApp">
+                </a>
+            </p>
+            <p>
+                <a href="https://instagram.com/inomchon165" target="_blank">
+                    @inomchon165
+                    <img src="https://cdn-icons-png.flaticon.com/24/2111/2111463.png" alt="Instagram">
+                </a>
+            </p>
+            <a href="https://www.tiktok.com/@user5914006857001" target="_blank">
+        TikTok
+        <img src="https://cdn-icons-png.flaticon.com/24/3046/3046121.png" alt="TikTok">
+    </a>
+        </div>
+    </div>
+    <footer>
+       
+    </footer>
+    <!-- Модальное окно -->
+    <div id="modal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div class="carousel-container">
+            <div id="carousel-track" class="carousel-track"></div>
+        </div>
+        <span class="nav-arrow prev" onclick="changeImage(-1)">&#10094;</span>
+        <span class="nav-arrow next" onclick="changeImage(1)">&#10095;</span>
+    </div>
+    <!-- Кнопки в правом углу -->
+    <div class="action-buttons">
+        <div class="action-btn scroll-top" onclick="scrollToTop()" title="Наверх">
+            ↑
+        </div>
+        <a href="tel:+992927857009" class="action-btn phone" title="Позвонить">
+            <img src="https://cdn-icons-png.flaticon.com/24/3616/3616215.png" alt="Телефон">
+        </a>
+        <a href="https://wa.me/+992927857009" target="_blank" class="action-btn whatsapp" title="Связаться в WhatsApp">
+            <img src="https://cdn-icons-png.flaticon.com/24/733/733585.png" alt="WhatsApp">
+        </a>
+        <a href="https://instagram.com/inomchon165" target="_blank" class="action-btn instagram" title="Instagram">
+            <img src="https://cdn-icons-png.flaticon.com/24/2111/2111463.png" alt="Instagram">
+        </a>
+        <a href="https://www.tiktok.com/@user5914006857001" target="_blank" class="action-btn tiktok" title="TikTok" style="background-color: #ffffff;">
+    <img src="https://cdn-icons-png.flaticon.com/24/3046/3046121.png" alt="TikTok">
+</a>
+    </div>
+    <!-- Переключатель темы -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="Переключить тему">🌙</button>
+    <script src="js.js"></script>
+</body>
+</html>
